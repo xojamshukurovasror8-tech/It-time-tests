@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Xodiyev Academy Test</title>
+  <style>
+    body { font-family: Arial; text-align:center; background: linear-gradient(135deg,#0a1f44,#1f3d82); color:white; }
+    h2{ margin-top:20px; font-size:28px; font-weight:bold;}
+    #name{width:220px; margin-bottom:15px; padding:10px; font-size:16px;}
+    .answers{ display:grid; grid-template-columns:repeat(5,80px); grid-gap:25px; justify-content:center; margin-top:20px;}
+    .answer-item{text-align:center;}
+    .answer-item label{display:block; margin-bottom:5px; font-size:16px;}
+    .answers button{width:70px; height:70px; font-size:18px; border-radius:10px; border:none; cursor:pointer;}
+    button.submit-btn{margin-top:25px; padding:12px 25px; background:#1e90ff; color:white; font-size:16px;}
+    button.submit-btn:hover{background:#63b3ff;}
+    #result{margin-top:25px; background: rgba(255,255,255,0.15); padding:20px; border-radius:12px; display:inline-block; max-width:750px; text-align:left;}
+    .correct{background-color:#4CAF50 !important;color:white;}
+    .wrong{background-color:#e74c3c !important;color:white;}
+  </style>
+</head>
+<body>
+
+<h2>📘 Xodiyev Academy Test</h2>
+<p>Ismingizni kiriting:</p>
+<input type="text" id="name" placeholder="Ismingiz">
+
+<h3>Javoblaringiz:</h3>
+<div class="answers" id="answers-container"></div>
+
+<br>
+<button class="submit-btn" onclick="check()">Tekshirish</button>
+<h3 id="result"></h3>
+
+<script>
+const tests = {
+  "MATH001":[
+    "A","B","C","D","A","C","B","D","A","B",
+    "A","B","C","D","A","C","B","D","A","B",
+    "A","B","C","D","A","C","B","D","A","B"
+  ]
+};
+const variants=["A","B","C","D"];
+const container=document.getElementById("answers-container");
+
+for(let i=0;i<30;i++){
+  const div=document.createElement("div");
+  div.classList.add("answer-item");
+  const label=document.createElement("label"); label.innerText=i+1; div.appendChild(label);
+  variants.forEach(v=>{
+    const btn=document.createElement("button");
+    btn.innerText=v;
+    btn.dataset.q=i;
+    btn.dataset.val=v;
+    btn.onclick=function(){
+      document.querySelectorAll('#answers-container button[data-q="'+i+'"]').forEach(b=>b.style.opacity=0.3);
+      btn.style.opacity=1; btn.dataset.selected=true;
+    }
+    div.appendChild(btn);
+  });
+  container.appendChild(div);
+}
+
+function check(){
+  const name=document.getElementById("name").value.trim();
+  if(!name){ alert("Iltimos, ismingizni kiriting!"); return; }
+
+  const code="MATH001"; const correctAnswers=tests[code];
+  let correct=0; let details="";
+  for(let i=0;i<30;i++){
+    const selectedBtn=document.querySelector('#answers-container button[data-q="'+i+'"][data-selected="true"]');
+    variants.forEach(v=>{ const b=document.querySelector('#answers-container button[data-q="'+i+'"][data-val="'+v+'"]'); b.classList.remove("correct","wrong");});
+    if(selectedBtn){
+      if(selectedBtn.dataset.val==correctAnswers[i]){
+        selectedBtn.classList.add("correct"); correct++;
+        details+="✅ "+(i+1)+"-savol to‘g‘ri<br>";
+      }else{
+        selectedBtn.classList.add("wrong");
+        const correctBtn=document.querySelector('#answers-container button[data-q="'+i+'"][data-val="'+correctAnswers[i]+'"]');
+        correctBtn.classList.add("correct");
+        details+="❌ "+(i+1)+"-savol xato (to‘g‘ri: "+correctAnswers[i]+")<br>";
+      }
+    }else{
+      const correctBtn=document.querySelector('#answers-container button[data-q="'+i+'"][data-val="'+correctAnswers[i]+'"]');
+      correctBtn.classList.add("correct");
+      details+="❌ "+(i+1)+"-savol javobsiz (to‘g‘ri: "+correctAnswers[i]+")<br>";
+    }
+  }
+  const total=correctAnswers.length;
+  const percent=(correct/total)*100;
+  const score10=percent/10;
+  document.getElementById("result").innerHTML=
+    "👤 Foydalanuvchi: "+name+"<br><br>"+details+"<br>"+
+    "✅ To‘g‘ri javoblar: "+correct+" / "+total+"<br>"+
+    "📊 Foiz: "+percent.toFixed(1)+"%<br>"+
+    "🎯 Ball: "+score10.toFixed(1)+" / 10";
+}
+</script>
+</body>
+</html>
